@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AgriVision AI</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: #0f172a;
+            color: white;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            padding: 20px 40px;
+            background: #020617;
+            border-bottom: 1px solid #1e293b;
+        }
+
+        nav h1 {
+            color: #22c55e;
+        }
+
+        .main {
+            display: flex;
+            height: calc(100vh - 70px);
+        }
+
+        .left {
+            width: 35%;
+            padding: 30px;
+            background: #020617;
+            border-right: 1px solid #1e293b;
+        }
+
+        .right {
+            width: 65%;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            overflow-y: auto;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 8px;
+            border: 1px solid #334155;
+            background: #020617;
+            color: white;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            background: linear-gradient(45deg, #22c55e, #4ade80);
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .card {
+            background: #020617;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #1e293b;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        img {
+            width: 60%;
+            max-height: 350px;
+            object-fit: contain;
+            display: block;
+            margin: auto;
+            border-radius: 10px;
+        }
+
+        .good { color: #22c55e; font-weight: bold; }
+        .mid { color: #facc15; font-weight: bold; }
+        .bad { color: #ef4444; font-weight: bold; }
+
+        .metric {
+            font-size: 22px;
+        }
+
+        .filename {
+            font-size: 12px;
+            color: #94a3b8;
+        }
+    </style>
+</head>
+
+<body>
+
+<nav>
+    <h1>🌾 AgriVision AI</h1>
+    <span>AI Crop Dashboard</span>
+</nav>
+
+<div class="main">
+
+    <!-- LEFT -->
+    <div class="left">
+
+        <h2>Crop Analysis</h2>
+        <p>Upload image & analyze crop health instantly</p>
+
+        <form action="/upload" method="post" enctype="multipart/form-data">
+
+            <input type="file" name="image" required onchange="showFileName(event)">
+
+            <p id="file-name" class="filename">
+                {% if filename %}Selected: {{ filename }}{% endif %}
+            </p>
+
+            <h3>Field Selection</h3>
+
+            <input type="number" name="x" placeholder="X" value="0">
+            <input type="number" name="y" placeholder="Y" value="0">
+            <input type="number" name="w" placeholder="Width" value="300">
+            <input type="number" name="h" placeholder="Height" value="300">
+
+            <button onclick="this.innerText='Analyzing...'">Analyze 🚀</button>
+
+        </form>
+
+    </div>
+
+    <!-- RIGHT -->
+    <div class="right">
+
+        {% if image %}
+
+        <div class="grid">
+
+            <div class="card">
+                <h3>NDVI Score</h3>
+                <div class="metric">{{ mean_ndvi }}</div>
+            </div>
+
+            <div class="card">
+                <h3>Crop Health</h3>
+                <div class="
+                    {% if 'Healthy' in health %}good
+                    {% elif 'Moderate' in health %}mid
+                    {% else %}bad
+                    {% endif %}
+                ">
+                    {{ health }}
+                </div>
+            </div>
+
+        </div>
+
+        <div class="card">
+            <h3>NDVI Heatmap</h3>
+            <img src="{{ image }}">
+        </div>
+
+        <div class="card">
+            <h3>NDVI Graph</h3>
+            <img src="{{ graph }}">
+        </div>
+
+        <div class="card">
+            <h3>AI Suggestion</h3>
+            <p>{{ suggestion }}</p>
+        </div>
+
+        {% else %}
+
+        <div class="card">
+            <h2>🚀 Ready to Analyze</h2>
+            <p>Upload image to start</p>
+        </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+<script>
+function showFileName(event) {
+    const fileName = event.target.files[0].name;
+    document.getElementById("file-name").innerText = "Selected: " + fileName;
+}
+</script>
+
+</body>
+</html>
